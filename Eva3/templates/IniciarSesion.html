@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Iniciar Sesion</title>
+</head>
+<body>
+    <div class="container mt-5">
+        <form method="post" class="bg-light p-4">
+            {{ form.as_p }}
+
+            {% if form.errors %}
+        <div class="alert alert-danger">
+            {% for field in form %}
+                {% for error in field.error %}
+                    <p>{{ field.label }}: {{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+            {% csrf_token %}
+            <div class="d-flex justify-content">
+                <input type="submit" value="Iniciar Sesion" class="btn btn-primary">
+            </div>
+        </form>
+
+        <div class="mt-3">
+            <a href="/RegistrarUsuario" class="btn btn-danger">Registrate!</a>
+        </div>
+    </div>
+</body>
+</html>
