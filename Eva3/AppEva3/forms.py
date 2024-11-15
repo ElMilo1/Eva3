@@ -1,11 +1,12 @@
 from  django import forms
-from django.core.exceptions import ValidationError
-from AppEva3.models import Warframe, UserData
+from django.core.exceptions import ValidationError 
+from django.core import validators
+from AppEva3.models import Warframe, UserData, Weapon
 
 class WarframeForm(forms.ModelForm):
     class Meta:
         model = Warframe
-        fields = '__all__'
+        fields = ['WarframeName','Critical_Utility','CriticalDMG_Utility','Status_Utility']
         
     def clean_CriticalUtility(self):
         critical_utility = self.cleaned_data.get('Critical_Utility')
@@ -49,6 +50,44 @@ class WarframeForm(forms.ModelForm):
         
         return cleaned_data
     
+class WeaponForm(forms.ModelForm):
+    
+    Weapon_Slot_OptionVar = [
+    ('',''),
+    ('PRIMARY','PRIMARY'),
+    ('SECONDARY','SECONDARY'),
+    ('MELEE','MELEE')
+    ]
+
+    Weapon_TypeVar = [
+    ('',''),
+    ('CLOSE RANGE','CLOSE RANGE'),
+    ('MID RANGE','MID RANGE'),
+    ('LONG RANGE','LONG RANGE')
+    ]
+
+    def Percentaje_Val(x):
+        if x>50 or x<0:
+            raise forms.ValidationError("Ingresa un valor entre 0 y 50")
+    
+    WeaponName = forms.CharField(validators=[
+        validators.MaxLengthValidator(255),
+        validators.MinLengthValidator(5)
+    ])
+    WeaponType = forms.ChoiceField(choices=Weapon_TypeVar)
+    WeaponSlot = forms.ChoiceField(choices=Weapon_Slot_OptionVar)
+    Critical_Utility = forms.FloatField(validators=[Percentaje_Val])
+    CriticalDMG_Utility = forms.FloatField(validators=[
+        validators.MinValueValidator(1),
+        validators.MaxValueValidator(5)
+    ])
+    Status_Utility = forms.FloatField(validators=[Percentaje_Val])
+
+    class Meta:
+        model = Weapon
+        fields = ['WeaponName','WeaponType','WeaponSlot','Critical_Utility','CriticalDMG_Utility','Status_Utility']
+
+
 class User(forms.ModelForm):
     class Meta:
         model = UserData

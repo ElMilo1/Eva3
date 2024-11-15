@@ -5,11 +5,13 @@ from AppEva3 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('Principal/', views.Home),
-    path('IniciarSesion/', views.IniciarSesion),
-    path('RegistrarUsuario', views.RegisterUser),
-    path('WarframeListado/', views.WarframeListado),
-    path('AgregarWarframe/', views.AgregarWarframe),
-    path('EliminarWarframe/<int:id>', views.EliminarWarframe),
-    path('ModificarDatos/<int:id>', views.ModificarDatosWarframe)
+    path('home/', views.Home), #Ejecutar despues de principal/Iniciar sesion
+    path('Principal/', views.IniciarSesion), #Hacer pagina principal previo a home
+    path('RegistrarUsuario/', views.RegisterUser), #Ejecutar desde principal
+    path('WarframeListado/', views.WarframeListado), #listo
+    path('AgregarWarframe/', views.AgregarWarframe), #Listo
+    path('EliminarWarframe/<int:id>', views.EliminarWarframe), #Listo
+    path('ModificarDatos/<int:id>', views.ModificarDatosWarframe), #Listo
+    path('WeaponListado/',views.WeaponListado), #Funcional
+    path('AgregarWeapon/',views.AgregarWeapon), #Por probar
 ]

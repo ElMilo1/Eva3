@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password
-from AppEva3.models import Warframe, UserData, BuildResume
-from AppEva3.forms import WarframeForm, User
+from AppEva3.models import Warframe, UserData, BuildResume, Weapon
+from AppEva3.forms import WarframeForm, User, WeaponForm
 
 # Create your views here.
 
@@ -46,6 +46,22 @@ def ModificarDatosWarframe(request, id):
         
     data = {'form' : form}
     return render(request, 'FormularioWarframe.html', data)
+
+#Weapon
+def WeaponListado(request):
+    listado = Weapon.objects.all()
+    data = {'Weapon': listado}
+    return render(request, 'ListadoWeapons.html',data)
+
+def AgregarWeapon(request):
+    form = WeaponForm
+    if request.method == 'POST':
+        form = WeaponForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return Home(request)
+    data = {'form':form}
+    return render(request,'AgregarWeapons.html',data)
 
 #User
 def IniciarSesion(request):
