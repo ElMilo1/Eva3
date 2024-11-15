@@ -10,9 +10,9 @@ class Weapon(models.Model):
     WeaponName = models.CharField(max_length=255)
     WeaponType = models.CharField(max_length=50)
     WeaponSlot = models.CharField(max_length=50)
-    Critical_Utility = models.IntegerField()
+    Critical_Utility = models.FloatField()
     CriticalDMG_Utility = models.FloatField()
-    Status_Utility = models.IntegerField()
+    Status_Utility = models.FloatField()
 
     TotalUtility = models.FloatField()
     def save(self , *args , **kwargs):
@@ -42,9 +42,9 @@ class Warframe(models.Model):
         x1 = self.Critical_Utility/100
         x2 = self.CriticalDMG_Utility
         x3 = self.Status_Utility/100
-        xt = ((x1 + x3)*x2)/3
+        xt = ((x1 + x3)*x2)/4
         
-        self.TotalUtility = xt
+        self.TotalUtility = xt*100
 
 class WeaponUtility(models.Model):
     WeaponName = models.CharField(max_length=255)

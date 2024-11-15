@@ -1,7 +1,7 @@
 from  django import forms
 from django.core.exceptions import ValidationError 
 from django.core import validators
-from AppEva3.models import Warframe, UserData, Weapon
+from AppEva3.models import Warframe, UserData, Weapon, BuildResume
 
 class WarframeForm(forms.ModelForm):
     class Meta:
@@ -72,7 +72,7 @@ class WeaponForm(forms.ModelForm):
     
     WeaponName = forms.CharField(validators=[
         validators.MaxLengthValidator(255),
-        validators.MinLengthValidator(5)
+        validators.MinLengthValidator(3)
     ])
     WeaponType = forms.ChoiceField(choices=Weapon_TypeVar)
     WeaponSlot = forms.ChoiceField(choices=Weapon_Slot_OptionVar)
@@ -102,3 +102,97 @@ class User(forms.ModelForm):
             raise forms.ValidationError("Todos los campos son obligatorios")
         
         return cleaned_data
+    
+
+class BuildResumeForm(forms.ModelForm):
+    
+
+    def WarframeRec(self):
+        WarframeOpt = Warframe.objects.all()
+        if WarframeOpt.exists():
+            lista = []
+            for i in WarframeOpt:
+                lista.append(i)
+            return lista
+        else:
+            return []
+        
+    def WarframeOptVar(self):
+            WarframeVar = self.WarframeRec()
+            lista = []
+            for i in WarframeVar:
+                lista.append((i.WarframeName, i.WarframeName))
+            lista.insert(0, ('', ''))
+            return lista
+
+    def PrimaryRec(self):    
+        WPrimary = Weapon.objects.filter(WeaponSlot='PRIMARY')
+        if WPrimary.exists():
+            lista = []
+            for i in WPrimary:
+                lista.append(i)
+            return lista
+        else:
+            return []
+
+    def SecondaryRec(self):
+        WSecondary = Weapon.objects.filter(WeaponSlot='SECONDARY')
+        if WSecondary.exists():
+            lista = []
+            for i in WSecondary:
+                lista.append(i)
+            return lista
+        else:
+            return []
+
+    def MeleeRec(self):
+        WMelee = Weapon.objects.filter(WeaponSlot='MELEE')
+        if WMelee.exists():
+            lista = []
+            for i in WMelee:
+                lista.append(i)
+            return lista
+        else:
+            return []
+        
+    def PrimaryOptionVar(self):
+            PrimaryWeapons = self.PrimaryRec()
+            lista = []
+            for i in PrimaryWeapons:
+                lista.append((i.WeaponName, i.WeaponName))
+            lista.insert(0, ('', ''))
+            return lista
+
+    def SecondaryOptionVar(self):
+            SecondaryWeapons = self.SecondaryRec()
+            lista = []
+            for i in SecondaryWeapons:
+                lista.append((i.WeaponName, i.WeaponName))
+            lista.insert(0, ('', ''))
+            return lista
+
+    def MeleeOptionVar(self):
+            MeleeWeapons = self.MeleeRec()
+            lista = []
+            for i in MeleeWeapons:
+                lista.append((i.WeaponName, i.WeaponName))
+            lista.insert(0, ('', ''))
+            return lista
+    
+    def assign_objects(self):
+        self.Warframe = self.get_warframe(self.cleaned_data.get('WarframeName'))
+        self.Primary = self.get_primary_weapon(self.cleaned_data.get('Primary'))
+        self.Secondary = self.get_secondary_weapon(self.cleaned_data.get('Secondary'))
+        self.Melee = self.get_melee_weapon(self.cleaned_data.get('Melee'))
+    
+    UserName = forms.CharField(max_length=255)
+    def __init__(self, *args, **kwargs):
+        super(BuildResumeForm, self).__init__(*args, **kwargs)
+        self.fields['WarframeName'] = forms.ChoiceField(choices=self.WarframeOptVar())
+        self.fields['Primary'] = forms.ChoiceField(choices=self.PrimaryOptionVar())
+        self.fields['Secondary'] = forms.ChoiceField(choices=self.SecondaryOptionVar())
+        self.fields['Melee'] = forms.ChoiceField(choices=self.MeleeOptionVar())
+    
+    class Meta:
+        model = BuildResume
+        fields = ['UserName','WarframeName','Primary','Secondary','Melee']

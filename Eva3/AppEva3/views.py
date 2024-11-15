@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password
 from AppEva3.models import Warframe, UserData, BuildResume, Weapon
-from AppEva3.forms import WarframeForm, User, WeaponForm
+from AppEva3.forms import WarframeForm, User, WeaponForm, BuildResumeForm
 
 # Create your views here.
 
@@ -60,8 +60,19 @@ def AgregarWeapon(request):
         if form.is_valid():
             form.save()
         return Home(request)
-    data = {'form':form}
+    data = {'form' : form}
     return render(request,'AgregarWeapons.html',data)
+
+#Build
+def AgregarBuild(request):
+    form = BuildResumeForm
+    if request.method == 'POST':
+        form = BuildResumeForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return Home(request)
+    data = {'form' : form}
+    return render(request,'AgregarBuild.html',data)
 
 #User
 def IniciarSesion(request):
