@@ -105,8 +105,6 @@ class User(forms.ModelForm):
     
 
 class BuildResumeForm(forms.ModelForm):
-    
-
     def WarframeRec(self):
         WarframeOpt = Warframe.objects.all()
         if WarframeOpt.exists():
@@ -179,12 +177,37 @@ class BuildResumeForm(forms.ModelForm):
             lista.insert(0, ('', ''))
             return lista
     
-    def assign_objects(self):
+    def AsignBuild(self):
         self.Warframe = self.get_warframe(self.cleaned_data.get('WarframeName'))
         self.Primary = self.get_primary_weapon(self.cleaned_data.get('Primary'))
         self.Secondary = self.get_secondary_weapon(self.cleaned_data.get('Secondary'))
         self.Melee = self.get_melee_weapon(self.cleaned_data.get('Melee'))
-    
+
+    def get_warframe(self, warframe_name):
+        try:
+            return Warframe.objects.get(WarframeName=warframe_name)
+        except Warframe.DoesNotExist:
+            return None
+        
+
+    def get_primary_weapon(self, primary_name):
+        try:
+            return Weapon.objects.get(WeaponName=primary_name, WeaponSlot='PRIMARY')
+        except Weapon.DoesNotExist:
+            return None
+
+    def get_secondary_weapon(self, secondary_name):
+        try:
+            return Weapon.objects.get(WeaponName=secondary_name, WeaponSlot='SECONDARY')
+        except Weapon.DoesNotExist:
+            return None
+
+    def get_melee_weapon(self, melee_name):
+        try:
+            return Weapon.objects.get(WeaponName=melee_name, WeaponSlot='MELEE')
+        except Weapon.DoesNotExist:
+            return None
+
     UserName = forms.CharField(max_length=255)
     def __init__(self, *args, **kwargs):
         super(BuildResumeForm, self).__init__(*args, **kwargs)
