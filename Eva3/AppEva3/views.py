@@ -63,6 +63,24 @@ def AgregarWeapon(request):
     data = {'form' : form}
     return render(request,'AgregarWeapons.html',data)
 
+def BorrarWeapon(request,id):
+    x = Weapon.objects.get(id=id)
+    x.delete()
+    return redirect('../WeaponListado/')
+
+def EditarWeapon(request,id):
+    EWeapon = Weapon.objects.get(id=id)
+    form = WeaponForm
+    if request.method == 'POST':
+        form = WeaponForm(request.POST, instance=EWeapon)
+        if form.is_valid():
+            form.save()
+        return Home(request)
+    else:
+        form = WeaponForm(instance=EWeapon)
+    data = {'form':form}
+    return render(request,'AgregarWeapons.html',data)
+
 #Build
 def AgregarBuild(request):
     if request.method == 'POST':
@@ -117,5 +135,5 @@ def RegisterUser(request):
 #Builds
 def ListadoBuilds(request):
     listadoB = BuildResume.objects.all()
-    data = {'ListadoB', listadoB}
+    data = {'ListadoB': listadoB}
     return render(request, 'Builds.html', data)

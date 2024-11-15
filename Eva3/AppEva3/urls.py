@@ -11,6 +11,8 @@ urlpatterns = [
     path('ModificarDatos/<int:id>', views.ModificarDatosWarframe), #Listo
     path('WeaponListado/',views.WeaponListado), #Funcional
     path('AgregarWeapon/',views.AgregarWeapon), #Por probar
+    path('EliminarWeapon/<int:id>',views.BorrarWeapon),
+    path('EditarWeapon/<int:id>',views.EditarWeapon),
     path('AgregarBuild/',views.AgregarBuild),
     path('VerBuilds/', views.ListadoBuilds)
 ]
