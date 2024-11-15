@@ -117,5 +117,5 @@ def RegisterUser(request):
 #Builds
 def ListadoBuilds(request):
     listadoB = BuildResume.objects.all()
-    data = {'ListadoB', listadoB}
+    data = {'ListadoB' : listadoB}
     return render(request, 'Builds.html', data)
