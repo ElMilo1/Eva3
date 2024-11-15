@@ -14,5 +14,7 @@ urlpatterns = [
     path('EliminarWeapon/<int:id>',views.BorrarWeapon),
     path('EditarWeapon/<int:id>',views.EditarWeapon),
     path('AgregarBuild/',views.AgregarBuild),
-    path('VerBuilds/', views.ListadoBuilds)
+    path('VerBuilds/', views.ListadoBuilds),
+    path('EliminarBuild/<int:id>',views.EliminarBuild),
+    path('EditarBuild/<int:id>',views.ModificarDatosBuild)
 ]

@@ -137,3 +137,22 @@ def ListadoBuilds(request):
     listadoB = BuildResume.objects.all()
     data = {'ListadoB': listadoB}
     return render(request, 'Builds.html', data)
+
+def EliminarBuild(request, id):
+    listado = BuildResume.objects.get(id = id)
+    listado.delete()
+    return redirect('../VerBuilds/')
+
+def ModificarDatosBuild(request, id):
+    listado = BuildResume.objects.get(id = id)
+    form = BuildResumeForm(instance = listado)
+    if request.method == 'POST':
+        form = BuildResumeForm(request.POST, instance = listado)
+        if form.is_valid():
+            form.save()
+            return redirect("/VerBuilds/")
+    else:
+        form = BuildResumeForm(instance = listado)
+        
+    data = {'form' : form}
+    return render(request, 'FormularioWarframe.html', data)
