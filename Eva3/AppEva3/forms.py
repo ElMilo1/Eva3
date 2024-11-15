@@ -116,12 +116,12 @@ class BuildResumeForm(forms.ModelForm):
             return []
         
     def WarframeOptVar(self):
-            WarframeVar = self.WarframeRec()
-            lista = []
-            for i in WarframeVar:
-                lista.append((i.WarframeName, i.WarframeName))
-            lista.insert(0, ('', ''))
-            return lista
+        WarframeVar = self.WarframeRec()
+        lista = []
+        for i in WarframeVar:
+            lista.append((i.WarframeName, i.WarframeName))
+        lista.insert(0, ('', ''))
+        return lista
 
     def PrimaryRec(self):    
         WPrimary = Weapon.objects.filter(WeaponSlot='PRIMARY')
@@ -154,28 +154,28 @@ class BuildResumeForm(forms.ModelForm):
             return []
         
     def PrimaryOptionVar(self):
-            PrimaryWeapons = self.PrimaryRec()
-            lista = []
-            for i in PrimaryWeapons:
-                lista.append((i.WeaponName, i.WeaponName))
-            lista.insert(0, ('', ''))
-            return lista
+        PrimaryWeapons = self.PrimaryRec()
+        lista = []
+        for i in PrimaryWeapons:
+            lista.append((i.WeaponName, i.WeaponName))
+        lista.insert(0, ('', ''))
+        return lista
 
     def SecondaryOptionVar(self):
-            SecondaryWeapons = self.SecondaryRec()
-            lista = []
-            for i in SecondaryWeapons:
-                lista.append((i.WeaponName, i.WeaponName))
-            lista.insert(0, ('', ''))
-            return lista
+        SecondaryWeapons = self.SecondaryRec()
+        lista = []
+        for i in SecondaryWeapons:
+            lista.append((i.WeaponName, i.WeaponName))
+        lista.insert(0, ('', ''))
+        return lista
 
     def MeleeOptionVar(self):
-            MeleeWeapons = self.MeleeRec()
-            lista = []
-            for i in MeleeWeapons:
-                lista.append((i.WeaponName, i.WeaponName))
-            lista.insert(0, ('', ''))
-            return lista
+        MeleeWeapons = self.MeleeRec()
+        lista = []
+        for i in MeleeWeapons:
+            lista.append((i.WeaponName, i.WeaponName))
+        lista.insert(0, ('', ''))
+        return lista
     
     def AsignBuild(self):
         self.Warframe = self.get_warframe(self.cleaned_data.get('WarframeName'))
@@ -188,7 +188,6 @@ class BuildResumeForm(forms.ModelForm):
             return Warframe.objects.get(WarframeName=warframe_name)
         except Warframe.DoesNotExist:
             return None
-        
 
     def get_primary_weapon(self, primary_name):
         try:
@@ -208,14 +207,70 @@ class BuildResumeForm(forms.ModelForm):
         except Weapon.DoesNotExist:
             return None
 
+    def clean_WarframeName(self):
+        warframe_name = self.cleaned_data.get('WarframeName')
+        if warframe_name:
+            try:
+                Warframe.objects.get(WarframeName=warframe_name)
+            except Warframe.DoesNotExist:
+                raise forms.ValidationError("El Warframe seleccionado no existe")
+        return warframe_name
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        
+        # Asignar builds y obtener objetos relacionados
+        self.AsignBuild()
+        
+        # Establecer WarframeID
+        if self.Warframe:
+            instance.WarframeID = self.Warframe.id
+        else:
+            raise forms.ValidationError("No se pudo obtener el ID del Warframe")
+        
+        # Calcular TotalUtility
+        weapons_total = 0
+        if self.Primary:
+            weapons_total += min(100, self.Primary.TotalUtility)
+        if self.Secondary:
+            weapons_total += min(100, self.Secondary.TotalUtility)
+        if self.Melee:
+            weapons_total += min(100, self.Melee.TotalUtility)
+        
+        # Promedio de armas (no superará 100)
+        weapons_utility = weapons_total / 3
+        
+        # TotalUtility del Warframe (no superará 100)
+        warframe_utility = min(100, self.Warframe.TotalUtility) if self.Warframe else 0
+        
+        # Promedio final (no superará 100)
+        instance.TotalUtility = (weapons_utility + warframe_utility) / 2
+        
+        if commit:
+            instance.save()
+        return instance
+
     UserName = forms.CharField(max_length=255)
+    
     def __init__(self, *args, **kwargs):
         super(BuildResumeForm, self).__init__(*args, **kwargs)
-        self.fields['WarframeName'] = forms.ChoiceField(choices=self.WarframeOptVar())
-        self.fields['Primary'] = forms.ChoiceField(choices=self.PrimaryOptionVar())
-        self.fields['Secondary'] = forms.ChoiceField(choices=self.SecondaryOptionVar())
-        self.fields['Melee'] = forms.ChoiceField(choices=self.MeleeOptionVar())
+        self.fields['WarframeName'] = forms.ChoiceField(
+            choices=self.WarframeOptVar(),
+            required=True
+        )
+        self.fields['Primary'] = forms.ChoiceField(
+            choices=self.PrimaryOptionVar(),
+            required=True
+        )
+        self.fields['Secondary'] = forms.ChoiceField(
+            choices=self.SecondaryOptionVar(),
+            required=True
+        )
+        self.fields['Melee'] = forms.ChoiceField(
+            choices=self.MeleeOptionVar(),
+            required=True
+        )
     
     class Meta:
         model = BuildResume
-        fields = ['UserName','WarframeName','Primary','Secondary','Melee']
+        fields = ['UserName', 'WarframeName', 'Primary', 'Secondary', 'Melee']

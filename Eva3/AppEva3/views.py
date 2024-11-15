@@ -65,14 +65,18 @@ def AgregarWeapon(request):
 
 #Build
 def AgregarBuild(request):
-    form = BuildResumeForm
     if request.method == 'POST':
         form = BuildResumeForm(request.POST)
         if form.is_valid():
-            form.save()
-        return Home(request)
-    data = {'form' : form}
-    return render(request,'AgregarBuild.html',data)
+            try:
+                form.save()
+                return redirect('/VerBuilds/')  # Es mejor usar redirect que llamar a Home(request)
+            except Exception as e:
+                print(f"Error al guardar: {e}")  # Para debugging
+    else:
+        form = BuildResumeForm()  # Instancia vacía del formulario para GET
+    
+    return render(request, 'AgregarBuild.html', {'form': form})
 
 #User
 def IniciarSesion(request):
